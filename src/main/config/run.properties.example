@@ -1,0 +1,18 @@
+# Real comments in this file are marked with '#' whereas commented out lines
+# are marked with '!'
+
+# The token claim to be used for identifying the user.
+icatUserClaim = icatUser
+
+# The ICAT user to fall back to if no icatUserClaim is present in the token.
+# If omitted, an AuthnException will be thrown instead.
+icatUserFallback = anon/anon
+
+# If access to the oauth2 authentication should only be allowed from certain
+# IP addresses then provide a space separated list of allowed values. These
+# take the form of an IPV4 or IPV6 address followed by the number of bits
+# (starting from the most significant) to consider.
+!ip = 130.246.0.0/16   172.16.68.0/24
+
+# The mechanism label to appear before the user name. This may be omitted.
+mechanism = oauth2
