@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.interfaces.RSAPublicKey;
 
@@ -32,7 +33,9 @@ import com.auth0.jwk.JwkProvider;
 import com.auth0.jwk.JwkProviderBuilder;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
@@ -159,13 +162,30 @@ public class OAUTH2_Authenticator {
 
 		String icatUser;
 		String icatMechanism;
-		try {
-			DecodedJWT decodedJWT = JWT.decode(token);
-			String issuerUrl = decodedJWT.getClaim("iss").asString();
-			String configUrl = issuerUrl + "/.well-known/openid-configuration";
 
-			URL url = new URL(configUrl);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		DecodedJWT decodedJWT;
+		try {
+			decodedJWT = JWT.decode(token);
+		} catch (JWTDecodeException e) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token could not be decoded");
+		}
+
+		String kid = decodedJWT.getKeyId();
+		if (kid == null) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing a kid");
+		}
+
+		String issuer = decodedJWT.getClaim("iss").asString();
+		URL openidConfigUrl;
+		try {
+			openidConfigUrl = new URL(issuer + "/.well-known/openid-configuration");
+		} catch (MalformedURLException e) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token issuer is not a URL");
+		}
+
+		String jwkUrl;
+		try {
+			HttpURLConnection con = (HttpURLConnection) openidConfigUrl.openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			StringBuffer response = new StringBuffer();
 			String inputLine;
@@ -175,30 +195,40 @@ public class OAUTH2_Authenticator {
 			in.close();
 			JsonReader jsonReader = Json.createReader(new StringReader(response.toString()));
 			JsonObject jsonResponse = jsonReader.readObject();
-			String jwkUrl = jsonResponse.getString("jwks_uri");
+			jwkUrl = jsonResponse.getString("jwks_uri");
+		} catch (IOException | JsonException | NullPointerException e) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "Unable to find the JWK URL");
+		}
 
+		Jwk jwk;
+		try {
 			JwkProvider provider = new JwkProviderBuilder(new URL(jwkUrl)).build();
-			Jwk jwk = provider.get(decodedJWT.getKeyId());
+			jwk = provider.get(kid);
+		} catch (JwkException | MalformedURLException e) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "Unable to obtain the public key");
+		}
 
+		try {
 			Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
 			Verification verifier = JWT.require(algorithm);
 			verifier.build().verify(decodedJWT);
-
-			Claim claim = decodedJWT.getClaim(icatUserClaim);
-			if (claim.isNull()) {
-				if (icatUserFallbackName == null || icatUserFallbackName.isEmpty()) {
-					throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN,
-							"The token is missing an ICAT user name");
-				} else {
-					icatUser = icatUserFallbackName;
-					icatMechanism = icatUserFallbackMechanism;
-				}
-			} else {
-				icatUser = claim.asString();
-				icatMechanism = mechanism;
-			}
-		} catch (JWTVerificationException | JwkException | IOException | JsonException e) {
+		} catch (TokenExpiredException e) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token has expired");
+		} catch (JWTVerificationException | JwkException e) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is invalid");
+		}
+
+		Claim claim = decodedJWT.getClaim(icatUserClaim);
+		if (claim.isNull()) {
+			if (icatUserFallbackName == null || icatUserFallbackName.isEmpty()) {
+				throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing an ICAT user name");
+			} else {
+				icatUser = icatUserFallbackName;
+				icatMechanism = icatUserFallbackMechanism;
+			}
+		} else {
+			icatUser = claim.asString();
+			icatMechanism = mechanism;
 		}
 
 		logger.info("User logged in succesfully as {}{}", (icatMechanism != null ? icatMechanism + "/" : ""), icatUser);
