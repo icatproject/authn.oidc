@@ -58,6 +58,7 @@ public class OAUTH2_Authenticator {
 	private static final Logger logger = LoggerFactory.getLogger(OAUTH2_Authenticator.class);
 	private static final Marker fatal = MarkerFactory.getMarker("FATAL");
 
+	private JwkProvider jwkProvider;
 	private String icatUserClaim;
 	private String icatUserFallbackName;
 	private String icatUserFallbackMechanism;
@@ -69,6 +70,15 @@ public class OAUTH2_Authenticator {
 		CheckedProperties props = new CheckedProperties();
 		try {
 			props.loadFromResource("run.properties");
+
+			String jwksUrl = props.getString("jwksUrl");
+			try {
+				jwkProvider = new JwkProviderBuilder(new URL(jwksUrl)).build();
+			} catch (MalformedURLException e) {
+				String msg = "Invalid jwksUrl in run.properties " + e.getMessage();
+				logger.error(fatal, msg);
+				throw new IllegalStateException(msg);
+			}
 
 			icatUserClaim = props.getString("icatUserClaim");
 

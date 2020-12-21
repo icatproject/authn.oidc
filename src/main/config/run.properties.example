@@ -1,6 +1,9 @@
 # Real comments in this file are marked with '#' whereas commented out lines
 # are marked with '!'
 
+# The URL pointing to the JSON Web Key Sets of the token issuer.
+jwksUrl = https://example.org/openid-connect/certs
+
 # The token claim to be used for identifying the user.
 icatUserClaim = icatUser
 
