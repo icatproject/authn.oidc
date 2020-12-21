@@ -1,11 +1,7 @@
 package org.icatproject.authn_oauth2;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,7 +10,6 @@ import java.security.interfaces.RSAPublicKey;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.json.Json;
-import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
@@ -197,37 +192,11 @@ public class OAUTH2_Authenticator {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing a kid");
 		}
 
-		String issuer = decodedJWT.getClaim("iss").asString();
-		URL openidConfigUrl;
-		try {
-			openidConfigUrl = new URL(issuer + "/.well-known/openid-configuration");
-		} catch (MalformedURLException e) {
-			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token issuer is not a URL");
-		}
-
-		String jwkUrl;
-		try {
-			HttpURLConnection con = (HttpURLConnection) openidConfigUrl.openConnection();
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			StringBuffer response = new StringBuffer();
-			String inputLine;
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();
-			JsonReader jsonReader = Json.createReader(new StringReader(response.toString()));
-			JsonObject jsonResponse = jsonReader.readObject();
-			jwkUrl = jsonResponse.getString("jwks_uri");
-		} catch (IOException | JsonException | NullPointerException e) {
-			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "Unable to find the JWK URL");
-		}
-
 		Jwk jwk;
 		try {
-			JwkProvider provider = new JwkProviderBuilder(new URL(jwkUrl)).build();
-			jwk = provider.get(kid);
-		} catch (JwkException | MalformedURLException e) {
-			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "Unable to obtain the public key");
+			jwk = jwkProvider.get(kid);
+		} catch (JwkException e) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "Unable to find a public key matching the kid");
 		}
 
 		try {
