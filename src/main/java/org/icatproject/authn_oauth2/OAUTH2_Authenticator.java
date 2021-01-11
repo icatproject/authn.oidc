@@ -1,7 +1,11 @@
 package org.icatproject.authn_oauth2;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -10,6 +14,7 @@ import java.security.interfaces.RSAPublicKey;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.json.Json;
+import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
@@ -66,11 +71,40 @@ public class OAUTH2_Authenticator {
 		try {
 			props.loadFromResource("run.properties");
 
-			String jwksUrl = props.getString("jwksUrl");
+			String wellKnownUrl = props.getString("wellKnownUrl");
+
+			URL openIdConfigUrl;
 			try {
-				jwkProvider = new JwkProviderBuilder(new URL(jwksUrl)).build();
+				openIdConfigUrl = new URL(wellKnownUrl);
 			} catch (MalformedURLException e) {
-				String msg = "Invalid jwksUrl in run.properties " + e.getMessage();
+				String msg = "Invalid wellKnownUrl URL in run.properties: " + e.getMessage();
+				logger.error(fatal, msg);
+				throw new IllegalStateException(msg);
+			}
+
+			JsonObject jsonResponse;
+			try {
+				HttpURLConnection con = (HttpURLConnection) openIdConfigUrl.openConnection();
+				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				StringBuffer response = new StringBuffer();
+				String inputLine;
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();
+				JsonReader jsonReader = Json.createReader(new StringReader(response.toString()));
+				jsonResponse = jsonReader.readObject();
+			} catch (IOException | JsonException e) {
+				String msg = "Unable to obtain information from the wellKnownUrl in run.properties: " + e.getMessage();
+				logger.error(fatal, msg);
+				throw new IllegalStateException(msg);
+			}
+
+			try {
+				String jwksUrl = jsonResponse.getString("jwks_uri");
+				jwkProvider = new JwkProviderBuilder(new URL(jwksUrl)).build();
+			} catch (NullPointerException | MalformedURLException e) {
+				String msg = "Unable to obtain jwk provider: " + e.getMessage();
 				logger.error(fatal, msg);
 				throw new IllegalStateException(msg);
 			}

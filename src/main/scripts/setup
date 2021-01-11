@@ -11,7 +11,7 @@ def undeploy():
 actions, arg, props = getActions("setup.properties", [])
 
 prop_name = "run.properties"
-prop_list = ["jwksUrl", "icatUserClaim"]
+prop_list = ["wellKnownUrl", "icatUserClaim"]
 
 properties = getProperties(prop_name, prop_list)
 

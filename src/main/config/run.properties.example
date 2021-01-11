@@ -1,8 +1,8 @@
 # Real comments in this file are marked with '#' whereas commented out lines
 # are marked with '!'
 
-# The URL pointing to the JSON Web Key Sets of the token issuer.
-jwksUrl = https://example.org/openid-connect/certs
+# The well-known OpenID configuration URL of the token issuer.
+wellKnownUrl = https://example.org/.well-known/openid-configuration
 
 # The token claim to be used for identifying the user.
 icatUserClaim = icatUser

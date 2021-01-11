@@ -83,19 +83,15 @@
 
 	<h2>The run.properties file</h2>
 	<dl>
-		<dt>jwksUrl</dt>
+		<dt>wellKnownUrl</dt>
 		<dd>
-			The URL pointing to the JSON Web Key Sets (JWKS) of the token
-			issuer. Only tokens that can be validated using one of the JWKs will
-			be accepted by authn.oauth2.
+			The well-known OpenID configuration URL of the token issuer. It is
+			expected to specify a jwks_uri. Only tokens that can be validated
+			using a key from the jwks_uri will be accepted by authn.oauth2.
 		</dd>
 		<dd>
-			In the case of Keycloak, this is usually <br />
-			<code>https://example.org/auth/realms/example/protocol/openid-connect/certs</code>
-		</dd>
-		<dd>
-			For many other oauth providers, it might be <br />
-			<code>https://example.org/.well-known/jwks.json</code>
+			In the case of Keycloak, it should look like this: <br />
+			<code>https://example.org/auth/realms/example/.well-known/openid-configuration</code>
 		</dd>
 		<dt>icatUserClaim</dt>
 		<dd>
