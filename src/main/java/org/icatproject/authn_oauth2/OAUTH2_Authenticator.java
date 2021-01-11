@@ -172,21 +172,6 @@ public class OAUTH2_Authenticator {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token could not be decoded");
 		}
 
-		String icatUser;
-		String icatMechanism;
-		Claim claim = decodedJWT.getClaim(icatUserClaim);
-		if (claim.isNull()) {
-			if (icatUserFallbackName == null || icatUserFallbackName.isEmpty()) {
-				throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing an ICAT user name");
-			} else {
-				icatUser = icatUserFallbackName;
-				icatMechanism = icatUserFallbackMechanism;
-			}
-		} else {
-			icatUser = claim.asString();
-			icatMechanism = mechanism;
-		}
-
 		String kid = decodedJWT.getKeyId();
 		if (kid == null) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing a kid");
@@ -207,6 +192,21 @@ public class OAUTH2_Authenticator {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token has expired");
 		} catch (JWTVerificationException | JwkException e) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is invalid");
+		}
+
+		String icatUser;
+		String icatMechanism;
+		Claim claim = decodedJWT.getClaim(icatUserClaim);
+		if (claim.isNull()) {
+			if (icatUserFallbackName == null || icatUserFallbackName.isEmpty()) {
+				throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing an ICAT user name");
+			} else {
+				icatUser = icatUserFallbackName;
+				icatMechanism = icatUserFallbackMechanism;
+			}
+		} else {
+			icatUser = claim.asString();
+			icatMechanism = mechanism;
 		}
 
 		logger.info("User logged in succesfully as {}{}", (icatMechanism != null ? icatMechanism + "/" : ""), icatUser);
