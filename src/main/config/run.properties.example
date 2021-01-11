@@ -5,7 +5,7 @@
 wellKnownUrl = https://example.org/.well-known/openid-configuration
 
 # The name/URL of the token issuer as it appears in the 'iss' token claim.
-tokenIssuer = https://example.org/auth/realms/master
+tokenIssuer = https://example.org/auth/realms/example
 
 # The token claim to be used for identifying the user.
 icatUserClaim = icatUser
