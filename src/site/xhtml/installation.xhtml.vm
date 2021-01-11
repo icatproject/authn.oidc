@@ -106,7 +106,7 @@
 		<dt>icatUserClaim</dt>
 		<dd>
 			The claim encoded within the token that shall be used as the ICAT
-			user name.
+			username.
 		</dd>
 		<dt>icatUserClaimException</dt>
 		<dd>
@@ -124,11 +124,32 @@
 		</dd>
 		<dt>mechanism</dt>
 		<dd>
-			If specified is a label to appear before the user name as it is made
-			available to ICAT for authorization. For example if this is set to
-			'oauth2' then a user with an entry of 'fred' will be provided to
-			ICAT as 'oauth2/fred', but if no mechanism is specified it will be
-			provided simply as 'fred'.
+			If specified is a label to appear before the username as it is made
+			available to ICAT for authorization. By default, this only affects
+			usernames obtained from the 'sub' claim. For usernames from the
+			<code>icatUserClaim</code>, authn.oauth2 tries to extract the
+			mechanism from the username itself.
+		</dd>
+		<dd>
+			For example, let's assume this is set to 'oauth2'. If a token contains
+			the <code>icatUserClaim</code> 'db/fred', then the username would be
+			provided to ICAT as 'db/fred'. But if a token only contains the
+			'sub' claim '37715', then the username would be provided to ICAT as
+			'oauth2/37715'.
+		</dd>
+		<dt>icatUserPrependMechanism</dt>
+		<dd>
+			Set this property to 'true' if you also want to prepend usernames
+			from the <code>icatUserClaim</code> with the mechanism label. This
+			only makes sense if the usernames encoded within the tokens don't
+			already include a mechanism.
+		</dd>
+		<dd>
+			For example, let's assume this is set to 'true' and the mechanism is
+			set to 'oauth2'. If a token contains the <code>icatUserClaim</code>
+			'fred', then the username would be provided to ICAT as 'oauth2/fred'.
+			But if a token contains the <code>icatUserClaim</code> 'db/fred',
+			then the username would be provided to ICAT as 'oauth2/db/fred'.
 		</dd>
 	</dl>
 

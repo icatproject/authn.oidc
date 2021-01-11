@@ -20,5 +20,9 @@ icatUserClaim = icatUser
 # (starting from the most significant) to consider.
 !ip = 130.246.0.0/16   172.16.68.0/24
 
-# The mechanism label to appear before the user name. This may be omitted.
-mechanism = oauth2
+# The mechanism label to appear before the username.
+!mechanism = oauth2
+
+# Prepend the icatUserClaim name with the above mechanism?
+# Otherwise, authn.oauth2 tries to extract the mechanism from the name itself.
+!icatUserPrependMechanism = true

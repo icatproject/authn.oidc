@@ -64,6 +64,7 @@ public class OAUTH2_Authenticator {
 	private boolean icatUserClaimException;
 	private AddressChecker addressChecker;
 	private String mechanism;
+	private boolean icatUserPrependMechanism;
 
 	@PostConstruct
 	private void init() {
@@ -142,6 +143,13 @@ public class OAUTH2_Authenticator {
 
 			if (props.has("mechanism")) {
 				mechanism = props.getString("mechanism");
+			}
+
+			icatUserPrependMechanism = false;
+			if (props.has("icatUserPrependMechanism")) {
+				if (props.getString("icatUserPrependMechanism") == "true") {
+					icatUserPrependMechanism = true;
+				}
 			}
 
 		} catch (CheckedPropertyException e) {
@@ -252,8 +260,19 @@ public class OAUTH2_Authenticator {
 				icatMechanism = mechanism;
 			}
 		} else {
-			icatUser = claim.asString();
-			icatMechanism = mechanism;
+			if (icatUserPrependMechanism) {
+				icatUser = claim.asString();
+				icatMechanism = mechanism;
+			} else {
+				String[] split = claim.asString().split("/");
+				if (split.length == 2) {
+					icatMechanism = split[0];
+					icatUser = split[1];
+				} else {
+					icatMechanism = null;
+					icatUser = claim.asString();
+				}
+			}
 		}
 
 		logger.info("User logged in succesfully as {}{}", (icatMechanism != null ? icatMechanism + "/" : ""), icatUser);
