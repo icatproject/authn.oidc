@@ -22,6 +22,30 @@ if arg in ["CONFIGURE", "INSTALL"]:
 if arg == "INSTALL":
 
     try:
+        icatUserClaimException = properties["icatUserClaimException"]
+    except KeyError:
+        icatUserClaimException = ""
+
+    try:
+        mechanism = properties["mechanism"]
+    except KeyError:
+        mechanism = ""
+
+    try:
+        icatUserPrependMechanism = properties["icatUserPrependMechanism"]
+    except KeyError:
+        icatUserPrependMechanism = ""
+
+    if icatUserPrependMechanism == "true":
+        if mechanism == "":
+            abort("icatUserPrependMechanism is 'true' but no mechanism is defined in run.properties")
+    
+    if mechanism != "":
+        if icatUserPrependMechanism != "true":
+            if icatUserClaimException == "true":
+                print("Warning: the mechanism defined in run.properties is never used because icatUserPrependMechanism=false and icatUserClaimException=true")
+
+    try:
         undeploy()
         ovfiles = [[prop_name, "WEB-INF/classes"]]
         if os.path.exists("logback.xml"): ovfiles.append(["logback.xml", "WEB-INF/classes"])
