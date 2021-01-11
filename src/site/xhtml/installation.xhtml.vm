@@ -93,6 +93,16 @@
 			In the case of Keycloak, it should look like this: <br />
 			<code>https://example.org/auth/realms/example/.well-known/openid-configuration</code>
 		</dd>
+		<dt>tokenIssuer</dt>
+		<dd>
+			The name or URL of the token issuer. This must exactly match the
+			'iss' claim encoded within the token and the 'issuer' attribute
+			found at the <code>wellKnownUrl</code>.
+		</dd>
+		<dd>
+			In the case of Keycloak, it should look like this: <br />
+			<code>https://example.org/auth/realms/example</code>
+		</dd>
 		<dt>icatUserClaim</dt>
 		<dd>
 			The claim encoded within the token that shall be used as the ICAT

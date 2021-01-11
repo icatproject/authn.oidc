@@ -59,6 +59,7 @@ public class OAUTH2_Authenticator {
 	private static final Marker fatal = MarkerFactory.getMarker("FATAL");
 
 	private JwkProvider jwkProvider;
+	private String tokenIssuer;
 	private String icatUserClaim;
 	private String icatUserFallbackName;
 	private String icatUserFallbackMechanism;
@@ -100,11 +101,21 @@ public class OAUTH2_Authenticator {
 				throw new IllegalStateException(msg);
 			}
 
+			String issuer;
 			try {
 				String jwksUrl = jsonResponse.getString("jwks_uri");
 				jwkProvider = new JwkProviderBuilder(new URL(jwksUrl)).build();
+				issuer = jsonResponse.getString("issuer");
 			} catch (NullPointerException | MalformedURLException e) {
-				String msg = "Unable to obtain jwk provider: " + e.getMessage();
+				String msg = "Unable to obtain jwk provider or issuer: " + e.getMessage();
+				logger.error(fatal, msg);
+				throw new IllegalStateException(msg);
+			}
+
+			tokenIssuer = props.getString("tokenIssuer");
+
+			if (tokenIssuer != issuer) {
+				String msg = "The issuer in the well-known configuration does not match the tokenIssuer in run.properties.";
 				logger.error(fatal, msg);
 				throw new IllegalStateException(msg);
 			}
@@ -226,6 +237,15 @@ public class OAUTH2_Authenticator {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token has expired");
 		} catch (JWTVerificationException | JwkException e) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is invalid");
+		}
+
+		Claim iss = decodedJWT.getClaim("iss");
+		if (iss.isNull()) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing the iss claim");
+		}
+		if (tokenIssuer != iss.asString()) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN,
+					"The iss claim of the token does not match the configured issuer");
 		}
 
 		String icatUser;
