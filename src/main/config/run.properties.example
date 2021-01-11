@@ -10,9 +10,9 @@ tokenIssuer = https://example.org/auth/realms/example
 # The token claim to be used for identifying the user.
 icatUserClaim = icatUser
 
-# The ICAT user to fall back to if no icatUserClaim is present in the token.
-# If omitted, an AuthnException will be thrown instead.
-icatUserFallback = anon/anon
+# Throw an AuthnException if no icatUserClaim is present in the token?
+# Otherwise, authn.oauth2 falls back to using the 'sub' claim.
+!icatUserClaimException = true
 
 # If access to the oauth2 authentication should only be allowed from certain
 # IP addresses then provide a space separated list of allowed values. These

@@ -108,11 +108,12 @@
 			The claim encoded within the token that shall be used as the ICAT
 			user name.
 		</dd>
-		<dt>icatUserFallback</dt>
+		<dt>icatUserClaimException</dt>
 		<dd>
-			The ICAT user to fall back to if no <code>icatUserClaim</code> is
-			present in the token. If this is omitted, an AuthnException will be
-			thrown instead.
+			By default, if no icatUserClaim is present in the token, authn.oauth2
+			falls back to using the 'sub' claim. If you would prefer an
+			AuthnException to be thrown in this case, set this property to
+			'true'.
 		</dd>
 		<dt>ip</dt>
 		<dd>

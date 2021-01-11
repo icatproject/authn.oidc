@@ -61,8 +61,7 @@ public class OAUTH2_Authenticator {
 	private JwkProvider jwkProvider;
 	private String tokenIssuer;
 	private String icatUserClaim;
-	private String icatUserFallbackName;
-	private String icatUserFallbackMechanism;
+	private boolean icatUserClaimException;
 	private AddressChecker addressChecker;
 	private String mechanism;
 
@@ -122,16 +121,10 @@ public class OAUTH2_Authenticator {
 
 			icatUserClaim = props.getString("icatUserClaim");
 
-			if (props.has("icatUserFallback")) {
-				String icatUserFallback = props.getString("icatUserFallback");
-
-				String[] split = icatUserFallback.split("/");
-				if (split.length == 2) {
-					icatUserFallbackMechanism = split[0];
-					icatUserFallbackName = split[1];
-				} else {
-					icatUserFallbackMechanism = null;
-					icatUserFallbackName = icatUserFallback;
+			icatUserClaimException = false;
+			if (props.has("icatUserClaimException")) {
+				if (props.getString("icatUserClaimException") == "true") {
+					icatUserClaimException = true;
 				}
 			}
 
@@ -252,11 +245,11 @@ public class OAUTH2_Authenticator {
 		String icatMechanism;
 		Claim claim = decodedJWT.getClaim(icatUserClaim);
 		if (claim.isNull()) {
-			if (icatUserFallbackName == null || icatUserFallbackName.isEmpty()) {
-				throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing an ICAT user name");
+			if (icatUserClaimException) {
+				throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing an ICAT username");
 			} else {
-				icatUser = icatUserFallbackName;
-				icatMechanism = icatUserFallbackMechanism;
+				icatUser = decodedJWT.getClaim("sub").asString();
+				icatMechanism = mechanism;
 			}
 		} else {
 			icatUser = claim.asString();
