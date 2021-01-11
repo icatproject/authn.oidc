@@ -114,7 +114,7 @@ public class OAUTH2_Authenticator {
 
 			tokenIssuer = props.getString("tokenIssuer");
 
-			if (tokenIssuer != issuer) {
+			if (!tokenIssuer.equals(issuer)) {
 				String msg = "The issuer in the well-known configuration does not match the tokenIssuer in run.properties.";
 				logger.error(fatal, msg);
 				throw new IllegalStateException(msg);
@@ -243,7 +243,7 @@ public class OAUTH2_Authenticator {
 		if (iss.isNull()) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing the iss claim");
 		}
-		if (tokenIssuer != iss.asString()) {
+		if (!tokenIssuer.equals(iss.asString())) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN,
 					"The iss claim of the token does not match the configured issuer");
 		}
