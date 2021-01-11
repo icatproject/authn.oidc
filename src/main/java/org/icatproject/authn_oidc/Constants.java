@@ -1,4 +1,4 @@
-package org.icatproject.authn_oauth2;
+package org.icatproject.authn_oidc;
 
 import java.io.IOException;
 import java.io.InputStream;

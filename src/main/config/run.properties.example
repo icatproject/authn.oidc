@@ -11,18 +11,18 @@ tokenIssuer = https://example.org/auth/realms/example
 icatUserClaim = icatUser
 
 # Throw an AuthnException if no icatUserClaim is present in the token?
-# Otherwise, authn.oauth2 falls back to using the 'sub' claim.
+# Otherwise, authn.oidc falls back to using the 'sub' claim.
 !icatUserClaimException = true
 
-# If access to the oauth2 authentication should only be allowed from certain
+# If access to the OIDC authentication should only be allowed from certain
 # IP addresses then provide a space separated list of allowed values. These
 # take the form of an IPV4 or IPV6 address followed by the number of bits
 # (starting from the most significant) to consider.
 !ip = 130.246.0.0/16   172.16.68.0/24
 
 # The mechanism label to appear before the username.
-!mechanism = oauth2
+!mechanism = oidc
 
 # Prepend the icatUserClaim name with the above mechanism?
-# Otherwise, authn.oauth2 tries to extract the mechanism from the name itself.
+# Otherwise, authn.oidc tries to extract the mechanism from the name itself.
 !icatUserPrependMechanism = true

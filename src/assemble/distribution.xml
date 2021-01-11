@@ -7,15 +7,15 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <outputDirectory>authn.oauth2</outputDirectory>
+            <outputDirectory>authn.oidc</outputDirectory>
             <directory>${basedir}/src/main/scripts</directory>
         </fileSet>
         <fileSet>
-            <outputDirectory>authn.oauth2</outputDirectory>
+            <outputDirectory>authn.oidc</outputDirectory>
             <directory>${basedir}/src/main/config</directory>
         </fileSet>
         <fileSet>
-            <outputDirectory>authn.oauth2</outputDirectory>
+            <outputDirectory>authn.oidc</outputDirectory>
             <directory>${basedir}</directory>
             <filtered>true</filtered>
             <includes>
@@ -27,15 +27,15 @@
     <dependencySets>
 
         <dependencySet>
-            <outputDirectory>authn.oauth2</outputDirectory>
+            <outputDirectory>authn.oidc</outputDirectory>
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <includes>
-                <include>org.icatproject:authn.oauth2</include>
+                <include>org.icatproject:authn.oidc</include>
             </includes>
         </dependencySet>
 
         <dependencySet>
-            <outputDirectory>authn.oauth2</outputDirectory>
+            <outputDirectory>authn.oidc</outputDirectory>
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <unpack>true</unpack>
             <unpackOptions>

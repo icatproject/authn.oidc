@@ -2,9 +2,9 @@
 
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${HOME}/logs/authn_oauth2.log</file>
+		<file>${HOME}/logs/authn_oidc.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${HOME}/logs/authn_oauth2.log.%d{yyyy-MM-dd}.%i.zip
+			<fileNamePattern>${HOME}/logs/authn_oidc.log.%d{yyyy-MM-dd}.%i.zip
 			</fileNamePattern>
 			<maxHistory>30</maxHistory>
 			<timeBasedFileNamingAndTriggeringPolicy

@@ -1,4 +1,4 @@
-package org.icatproject.authn_oauth2.exceptions;
+package org.icatproject.authn_oidc.exceptions;
 
 import java.io.ByteArrayOutputStream;
 

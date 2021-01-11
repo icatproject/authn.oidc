@@ -4,7 +4,7 @@
 	<body>
 
 		<breadcrumbs>
-			<item name="authn.oauth2" href="index.html" />
+			<item name="authn.oidc" href="index.html" />
 		</breadcrumbs>
 
 		<menu name="Information for Users">

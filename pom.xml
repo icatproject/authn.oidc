@@ -2,14 +2,14 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.icatproject</groupId>
-	<artifactId>authn.oauth2</artifactId>
+	<artifactId>authn.oidc</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>ICAT: authn.oauth2</name>
+	<name>ICAT: authn.oidc</name>
 
 	<description>
-      This is the OAUTH2 Authentication plugin for ICAT.  It is based on the
-      oauth2 protocol and works by verifying tokens issued by an external
+      This is the OIDC Authentication plugin for ICAT.  It is based on the
+      OpenID Connect protocol and works by verifying tokens issued by an external
       Identity Provider.
     </description>
 
@@ -18,7 +18,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project.scm.id>github</project.scm.id>
 		<repoUrl>https://repo.icatproject.org/repo</repoUrl>
-		<gitUrl>https://github.com/icatproject/authn.oauth2</gitUrl>
+		<gitUrl>https://github.com/icatproject/authn.oidc</gitUrl>
 	</properties>
 
 	<repositories>
@@ -36,7 +36,7 @@
 	</scm>
 
 	<issueManagement>
-		<url>https://github.com/icatproject/authn.oauth2/issues</url>
+		<url>https://github.com/icatproject/authn.oidc/issues</url>
 		<system>GitHub</system>
 	</issueManagement>
 
@@ -56,7 +56,7 @@
 		<downloadUrl>${repoUrl}</downloadUrl>
 		<site>
 			<id>repo.icatproject.org</id>
-			<url>dav:${repoUrl}/../site/authn/oauth2/${project.version}</url>
+			<url>dav:${repoUrl}/../site/authn/oidc/${project.version}</url>
 		</site>
 		<repository>
 			<id>repo.icatproject.org</id>

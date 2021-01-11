@@ -13,9 +13,9 @@
 
 	<ul>
 		<li>
-			The authn_oauth2 distribution:
-			<a href="${repoUrl}/org/icatproject/authn.oauth2/${project.version}/authn.oauth2-${project.version}-distro.zip">
-				authn_oauth2-${project.version}-distro.zip
+			The authn_oidc distribution:
+			<a href="${repoUrl}/org/icatproject/authn.oidc/${project.version}/authn.oidc-${project.version}-distro.zip">
+				authn_oidc-${project.version}-distro.zip
 			</a>
 		</li>
 		<li>
@@ -87,7 +87,7 @@
 		<dd>
 			The well-known OpenID configuration URL of the token issuer. It is
 			expected to specify a jwks_uri. Only tokens that can be validated
-			using a key from the jwks_uri will be accepted by authn.oauth2.
+			using a key from the jwks_uri will be accepted by authn.oidc.
 		</dd>
 		<dd>
 			In the case of Keycloak, it should look like this: <br />
@@ -110,14 +110,14 @@
 		</dd>
 		<dt>icatUserClaimException</dt>
 		<dd>
-			By default, if no icatUserClaim is present in the token, authn.oauth2
+			By default, if no icatUserClaim is present in the token, authn.oidc
 			falls back to using the 'sub' claim. If you would prefer an
 			AuthnException to be thrown in this case, set this property to
 			'true'.
 		</dd>
 		<dt>ip</dt>
 		<dd>
-			If access to the oauth2 authentication should only be allowed from
+			If access to the OIDC authentication should only be allowed from
 			certain IP addresses then provide a space separated list of allowed
 			values. These take the form of an IPV4 or IPV6 address followed by
 			the number of bits (starting from the most significant) to consider.
@@ -127,15 +127,15 @@
 			If specified is a label to appear before the username as it is made
 			available to ICAT for authorization. By default, this only affects
 			usernames obtained from the 'sub' claim. For usernames from the
-			<code>icatUserClaim</code>, authn.oauth2 tries to extract the
+			<code>icatUserClaim</code>, authn.oidc tries to extract the
 			mechanism from the username itself.
 		</dd>
 		<dd>
-			For example, let's assume this is set to 'oauth2'. If a token contains
+			For example, let's assume this is set to 'oidc'. If a token contains
 			the <code>icatUserClaim</code> 'db/fred', then the username would be
 			provided to ICAT as 'db/fred'. But if a token only contains the
 			'sub' claim '37715', then the username would be provided to ICAT as
-			'oauth2/37715'.
+			'oidc/37715'.
 		</dd>
 		<dt>icatUserPrependMechanism</dt>
 		<dd>
@@ -146,23 +146,23 @@
 		</dd>
 		<dd>
 			For example, let's assume this is set to 'true' and the mechanism is
-			set to 'oauth2'. If a token contains the <code>icatUserClaim</code>
-			'fred', then the username would be provided to ICAT as 'oauth2/fred'.
+			set to 'oidc'. If a token contains the <code>icatUserClaim</code>
+			'fred', then the username would be provided to ICAT as 'oidc/fred'.
 			But if a token contains the <code>icatUserClaim</code> 'db/fred',
-			then the username would be provided to ICAT as 'oauth2/db/fred'.
+			then the username would be provided to ICAT as 'oidc/db/fred'.
 		</dd>
 	</dl>
 
 
-	<h2>Check that authn.oauth2 works</h2>
+	<h2>Check that authn.oidc works</h2>
 	<p>
 		A simple standalone test is to run:
 		<blockquote>
-			<code>curl -k https://localhost:8181/authn.oauth2/description -w "\n"</code>
+			<code>curl -k https://localhost:8181/authn.oidc/description -w "\n"</code>
 			which returns a description, <br />
-			<code>curl -k https://localhost:8181/authn.oauth2/version -w "\n"</code>
+			<code>curl -k https://localhost:8181/authn.oidc/version -w "\n"</code>
 			which returns the version, and <br />
-			<code>curl -k https://localhost:8181/authn.oauth2/authenticate -w "\n"
+			<code>curl -k https://localhost:8181/authn.oidc/authenticate -w "\n"
 			-d 'json={"credentials":[{"token":"&lt;token&gt;"}]}'</code>
 			to authenticate.
 		</blockquote>

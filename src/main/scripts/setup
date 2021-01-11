@@ -2,10 +2,10 @@
 from setup_utils import *
 import os
 
-# authn.oauth2
+# authn.oidc
 
 def undeploy():
-    app = actions.getAppName("authn.oauth2")
+    app = actions.getAppName("authn.oidc")
     if app: actions.undeploy(app)
 
 actions, arg, props = getActions("setup.properties", [])

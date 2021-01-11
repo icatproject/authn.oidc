@@ -1,4 +1,4 @@
-package org.icatproject.authn_oauth2;
+package org.icatproject.authn_oidc;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -53,9 +53,9 @@ import org.slf4j.MarkerFactory;
 /* Mapped name is to avoid name clashes */
 @Path("/")
 @Stateless
-public class OAUTH2_Authenticator {
+public class OIDC_Authenticator {
 
-	private static final Logger logger = LoggerFactory.getLogger(OAUTH2_Authenticator.class);
+	private static final Logger logger = LoggerFactory.getLogger(OIDC_Authenticator.class);
 	private static final Marker fatal = MarkerFactory.getMarker("FATAL");
 
 	private JwkProvider jwkProvider;
@@ -157,7 +157,7 @@ public class OAUTH2_Authenticator {
 			throw new IllegalStateException(e.getMessage());
 		}
 
-		logger.info("Initialized OAUTH2_Authenticator");
+		logger.info("Initialized OIDC_Authenticator");
 	}
 
 	@GET
@@ -204,7 +204,7 @@ public class OAUTH2_Authenticator {
 			try {
 				if (!addressChecker.check(ip)) {
 					throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN,
-							"authn.oauth2 does not allow log in from your IP address " + ip);
+							"authn.oidc does not allow log in from your IP address " + ip);
 				}
 			} catch (AddressCheckerException e) {
 				throw new AuthnException(HttpURLConnection.HTTP_INTERNAL_ERROR, e.getClass() + " " + e.getMessage());
