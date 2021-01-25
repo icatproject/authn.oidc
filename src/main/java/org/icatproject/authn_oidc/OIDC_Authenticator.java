@@ -182,9 +182,9 @@ public class OIDC_Authenticator {
 			jwk = configurationManager.getJwkProvider().get(kid);
 		} catch (JwkException e) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "Unable to find a public key matching the kid");
-		} catch (IllegalArgumentException e) {
-			logger.error(fatal, e.getMessage());
-			throw new IllegalStateException(e.getMessage());
+		} catch (NullPointerException e) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN,
+					"The jwk configuration is not ready, try again in a few minutes");
 		}
 
 		try {

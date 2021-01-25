@@ -65,6 +65,8 @@ public class OpenidConfigurationManager {
     }
 
     private void checkJwkProvider() {
+        jwkProvider = null;
+
         JsonObject jsonResponse;
         try {
             HttpURLConnection con = (HttpURLConnection) openidConfigurationUrl.openConnection();
@@ -82,10 +84,11 @@ public class OpenidConfigurationManager {
             throw new RuntimeException(msg);
         }
 
+        JwkProvider provider;
         String issuer;
         try {
             String jwksUrl = jsonResponse.getString("jwks_uri");
-            jwkProvider = new JwkProviderBuilder(new URL(jwksUrl)).build();
+            provider = new JwkProviderBuilder(new URL(jwksUrl)).build();
             issuer = jsonResponse.getString("issuer");
         } catch (NullPointerException | MalformedURLException e) {
             String msg = "Unable to obtain jwk provider or issuer: " + e.getMessage();
@@ -96,6 +99,8 @@ public class OpenidConfigurationManager {
             String msg = "The issuer in the well-known configuration does not match the tokenIssuer in run.properties.";
             throw new RuntimeException(msg);
         }
+
+        jwkProvider = provider;
     }
 
 }
