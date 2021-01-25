@@ -29,13 +29,8 @@ public class OpenidConfigurationManager {
     private JwkProvider jwkProvider;
     private File timestampFile;
 
-    public OpenidConfigurationManager(String wellKnownUrl, String issuer) {
-        try {
-            openidConfigurationUrl = new URL(wellKnownUrl);
-        } catch (MalformedURLException e) {
-            String msg = "Invalid wellKnownUrl URL in run.properties: " + e.getMessage();
-            throw new IllegalArgumentException(msg);
-        }
+    public OpenidConfigurationManager(String wellKnownUrl, String issuer) throws MalformedURLException {
+        openidConfigurationUrl = new URL(wellKnownUrl);
         tokenIssuer = issuer;
 
         timestampFile = new File("auth.oidc-timestamp");

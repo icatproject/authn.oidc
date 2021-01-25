@@ -3,6 +3,7 @@ package org.icatproject.authn_oidc;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.security.interfaces.RSAPublicKey;
 
 import javax.annotation.PostConstruct;
@@ -67,9 +68,10 @@ public class OIDC_Authenticator {
 
 			try {
 				configurationManager = new OpenidConfigurationManager(wellKnownUrl, tokenIssuer);
-			} catch (IllegalArgumentException e) {
-				logger.error(fatal, e.getMessage());
-				throw new IllegalStateException(e.getMessage());
+			} catch (MalformedURLException e) {
+				String msg = "Invalid wellKnownUrl URL in run.properties: " + e.getMessage();
+				logger.error(fatal, msg);
+				throw new IllegalStateException(msg);
 			}
 
 			icatUserClaim = props.getString("icatUserClaim");
