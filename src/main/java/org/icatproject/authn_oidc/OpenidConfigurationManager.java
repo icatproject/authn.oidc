@@ -53,7 +53,7 @@ public class OpenidConfigurationManager {
         openidConfigurationUrl = new URL(wellKnownUrl);
         tokenIssuer = issuer;
 
-        timer.schedule(new Action(), shortIntervalMillis);
+        timer.schedule(new Action(), 0L);
     }
 
     public String getTokenIssuer() {
