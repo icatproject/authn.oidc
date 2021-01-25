@@ -1,12 +1,18 @@
 package org.icatproject.authn_oidc;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Scanner;
 
 import javax.json.Json;
 import javax.json.JsonException;
@@ -21,6 +27,7 @@ public class OpenidConfigurationManager {
     private URL openidConfigurationUrl;
     private String tokenIssuer;
     private JwkProvider jwkProvider;
+    private File timestampFile;
 
     public OpenidConfigurationManager(String wellKnownUrl, String issuer) {
         try {
@@ -30,6 +37,9 @@ public class OpenidConfigurationManager {
             throw new IllegalArgumentException(msg);
         }
         tokenIssuer = issuer;
+
+        timestampFile = new File("auth.oidc-timestamp");
+        readTimestampFile();
     }
 
     public String getTokenIssuer() {
@@ -37,7 +47,16 @@ public class OpenidConfigurationManager {
     }
 
     public JwkProvider getJwkProvider() {
+        long lastTimestamp = readTimestampFile();
+        long timestamp = Instant.now().minus(1, ChronoUnit.DAYS).getEpochSecond();
+        if (timestamp > lastTimestamp) {
+            checkJwkProvider();
+            writeTimestampFile(Instant.now().getEpochSecond());
+        }
+        return jwkProvider;
+    }
 
+    private void checkJwkProvider() {
         JsonObject jsonResponse;
         try {
             HttpURLConnection con = (HttpURLConnection) openidConfigurationUrl.openConnection();
@@ -69,8 +88,33 @@ public class OpenidConfigurationManager {
             String msg = "The issuer in the well-known configuration does not match the tokenIssuer in run.properties.";
             throw new IllegalArgumentException(msg);
         }
+    }
 
-        return jwkProvider;
+    private long readTimestampFile() {
+        long timestamp = 0L;
+        Scanner scan;
+        try {
+            scan = new Scanner(timestampFile);
+            if (scan.hasNextLong()) {
+                timestamp = scan.nextLong();
+            }
+            scan.close();
+        } catch (FileNotFoundException e) {
+            writeTimestampFile(timestamp);
+        }
+        return timestamp;
+    }
+
+    private void writeTimestampFile(long timestamp) {
+        String str = String.valueOf(timestamp);
+        FileWriter writer;
+        try {
+            writer = new FileWriter(timestampFile);
+            writer.write(str);
+            writer.close();
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
 }
