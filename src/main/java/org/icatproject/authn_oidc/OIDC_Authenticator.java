@@ -1,20 +1,13 @@
 package org.icatproject.authn_oidc;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.interfaces.RSAPublicKey;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.json.Json;
-import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
@@ -29,8 +22,6 @@ import javax.ws.rs.core.MediaType;
 
 import com.auth0.jwk.Jwk;
 import com.auth0.jwk.JwkException;
-import com.auth0.jwk.JwkProvider;
-import com.auth0.jwk.JwkProviderBuilder;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
@@ -58,8 +49,7 @@ public class OIDC_Authenticator {
 	private static final Logger logger = LoggerFactory.getLogger(OIDC_Authenticator.class);
 	private static final Marker fatal = MarkerFactory.getMarker("FATAL");
 
-	private JwkProvider jwkProvider;
-	private String tokenIssuer;
+	private OpenidConfigurationManager configurationManager;
 	private String icatUserClaim;
 	private boolean icatUserClaimException;
 	private AddressChecker addressChecker;
@@ -73,51 +63,13 @@ public class OIDC_Authenticator {
 			props.loadFromResource("run.properties");
 
 			String wellKnownUrl = props.getString("wellKnownUrl");
+			String tokenIssuer = props.getString("tokenIssuer");
 
-			URL openIdConfigUrl;
 			try {
-				openIdConfigUrl = new URL(wellKnownUrl);
-			} catch (MalformedURLException e) {
-				String msg = "Invalid wellKnownUrl URL in run.properties: " + e.getMessage();
-				logger.error(fatal, msg);
-				throw new IllegalStateException(msg);
-			}
-
-			JsonObject jsonResponse;
-			try {
-				HttpURLConnection con = (HttpURLConnection) openIdConfigUrl.openConnection();
-				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-				StringBuffer response = new StringBuffer();
-				String inputLine;
-				while ((inputLine = in.readLine()) != null) {
-					response.append(inputLine);
-				}
-				in.close();
-				JsonReader jsonReader = Json.createReader(new StringReader(response.toString()));
-				jsonResponse = jsonReader.readObject();
-			} catch (IOException | JsonException e) {
-				String msg = "Unable to obtain information from the wellKnownUrl in run.properties: " + e.getMessage();
-				logger.error(fatal, msg);
-				throw new IllegalStateException(msg);
-			}
-
-			String issuer;
-			try {
-				String jwksUrl = jsonResponse.getString("jwks_uri");
-				jwkProvider = new JwkProviderBuilder(new URL(jwksUrl)).build();
-				issuer = jsonResponse.getString("issuer");
-			} catch (NullPointerException | MalformedURLException e) {
-				String msg = "Unable to obtain jwk provider or issuer: " + e.getMessage();
-				logger.error(fatal, msg);
-				throw new IllegalStateException(msg);
-			}
-
-			tokenIssuer = props.getString("tokenIssuer");
-
-			if (!tokenIssuer.equals(issuer)) {
-				String msg = "The issuer in the well-known configuration does not match the tokenIssuer in run.properties.";
-				logger.error(fatal, msg);
-				throw new IllegalStateException(msg);
+				configurationManager = new OpenidConfigurationManager(wellKnownUrl, tokenIssuer);
+			} catch (IllegalArgumentException e) {
+				logger.error(fatal, e.getMessage());
+				throw new IllegalStateException(e.getMessage());
 			}
 
 			icatUserClaim = props.getString("icatUserClaim");
@@ -225,9 +177,12 @@ public class OIDC_Authenticator {
 
 		Jwk jwk;
 		try {
-			jwk = jwkProvider.get(kid);
+			jwk = configurationManager.getJwkProvider().get(kid);
 		} catch (JwkException e) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "Unable to find a public key matching the kid");
+		} catch (IllegalArgumentException e) {
+			logger.error(fatal, e.getMessage());
+			throw new IllegalStateException(e.getMessage());
 		}
 
 		try {
@@ -244,7 +199,7 @@ public class OIDC_Authenticator {
 		if (iss.isNull()) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing the iss claim");
 		}
-		if (!tokenIssuer.equals(iss.asString())) {
+		if (!configurationManager.getTokenIssuer().equals(iss.asString())) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN,
 					"The iss claim of the token does not match the configured issuer");
 		}
