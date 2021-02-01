@@ -67,7 +67,7 @@ public class OpenidConfigurationManager {
         return jwkProvider;
     }
 
-    private void checkJwkProvider() {
+    public void checkJwkProvider() {
         jwkProvider = null;
 
         JsonObject jsonResponse;

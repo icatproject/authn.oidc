@@ -121,6 +121,14 @@ public class OIDC_Authenticator {
 	}
 
 	@GET
+	@Path("jwkupdate")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String jwkUpdate() {
+		configurationManager.checkJwkProvider();
+		return "JWK update successful";
+	}
+
+	@GET
 	@Path("version")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getVersion() {
