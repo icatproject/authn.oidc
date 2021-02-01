@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.security.interfaces.RSAPublicKey;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -112,6 +113,11 @@ public class OIDC_Authenticator {
 		}
 
 		logger.info("Initialized OIDC_Authenticator");
+	}
+
+	@PreDestroy
+	public void exit() {
+		configurationManager.exit();
 	}
 
 	@GET

@@ -28,11 +28,12 @@ public class OpenidConfigurationManager {
         @Override
         public void run() {
             Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+            long intervalMillis = 86400000L; // 24 hours
             try {
                 checkJwkProvider();
             } catch (RuntimeException e) {
                 logger.error(e.getMessage());
-                timer.schedule(new Action(), shortIntervalMillis);
+                intervalMillis = 60000L; // 1 minute
             } finally {
                 timer.schedule(new Action(), intervalMillis);
             }
@@ -45,8 +46,6 @@ public class OpenidConfigurationManager {
     private String tokenIssuer;
     private JwkProvider jwkProvider;
 
-    private long intervalMillis = 86400000L; // every 24 hours
-    private long shortIntervalMillis = 60000L; // every minute
     private Timer timer = new Timer();
 
     public OpenidConfigurationManager(String wellKnownUrl, String issuer) throws MalformedURLException {
@@ -54,6 +53,10 @@ public class OpenidConfigurationManager {
         tokenIssuer = issuer;
 
         timer.schedule(new Action(), 0L);
+    }
+
+    public void exit() {
+        timer.cancel();
     }
 
     public String getTokenIssuer() {
