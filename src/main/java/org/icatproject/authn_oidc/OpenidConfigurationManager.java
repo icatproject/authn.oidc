@@ -28,15 +28,19 @@ public class OpenidConfigurationManager {
         @Override
         public void run() {
             Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-            long intervalMillis = 86400000L; // 24 hours
-            try {
-                checkJwkProvider();
-            } catch (RuntimeException e) {
-                logger.error(e.getMessage());
-                intervalMillis = 60000L; // 1 minute
-            } finally {
-                timer.schedule(new Action(), intervalMillis);
-            }
+            jwkUpdate();
+        }
+    }
+
+    private void jwkUpdate() {
+        long intervalMillis = 86400000L; // 24 hours
+        try {
+            checkJwkProvider();
+        } catch (RuntimeException e) {
+            logger.error(e.getMessage());
+            intervalMillis = 60000L; // 1 minute
+        } finally {
+            timer.schedule(new Action(), intervalMillis);
         }
     }
 
@@ -52,7 +56,7 @@ public class OpenidConfigurationManager {
         openidConfigurationUrl = new URL(wellKnownUrl);
         tokenIssuer = issuer;
 
-        timer.schedule(new Action(), 0L);
+        jwkUpdate();
     }
 
     public void exit() {
