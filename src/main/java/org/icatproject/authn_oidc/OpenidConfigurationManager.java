@@ -98,7 +98,7 @@ public class OpenidConfigurationManager {
             provider = new JwkProviderBuilder(new URL(jwksUrl)).build();
             issuer = jsonResponse.getString("issuer");
         } catch (NullPointerException | MalformedURLException e) {
-            String msg = "Unable to obtain jwk provider or issuer: " + e.getMessage();
+            String msg = "Unable to obtain JWK provider or issuer: " + e.getMessage();
             throw new RuntimeException(msg);
         }
 

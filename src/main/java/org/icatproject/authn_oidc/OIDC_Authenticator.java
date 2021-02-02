@@ -198,7 +198,7 @@ public class OIDC_Authenticator {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "Unable to find a public key matching the kid");
 		} catch (NullPointerException e) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN,
-					"The jwk configuration is not ready, try again in a few minutes");
+					"The JWK configuration is not ready, try again in a few minutes");
 		}
 
 		try {
