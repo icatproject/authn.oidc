@@ -120,12 +120,10 @@ public class OIDC_Authenticator {
 		configurationManager.exit();
 	}
 
-	@GET
+	@POST
 	@Path("jwkupdate")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String jwkUpdate() {
+	public void jwkUpdate() {
 		configurationManager.checkJwkProvider();
-		return "JWK update successful";
 	}
 
 	@GET
