@@ -106,6 +106,7 @@ public class OpenidConfigurationManager {
         }
 
         jwkProvider = provider;
+	logger.info("jwkProvider updated successfully");
     }
 
 }
