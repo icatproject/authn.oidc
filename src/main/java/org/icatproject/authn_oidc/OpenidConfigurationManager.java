@@ -48,7 +48,7 @@ public class OpenidConfigurationManager {
 
     private URL openidConfigurationUrl;
     private String tokenIssuer;
-    private JwkProvider jwkProvider;
+    private JwkProvider jwkProvider = null;
 
     private Timer timer = new Timer();
 
@@ -72,8 +72,6 @@ public class OpenidConfigurationManager {
     }
 
     public void checkJwkProvider() {
-        jwkProvider = null;
-
         JsonObject jsonResponse;
         try {
             HttpURLConnection con = (HttpURLConnection) openidConfigurationUrl.openConnection();
