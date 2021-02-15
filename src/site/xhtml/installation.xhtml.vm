@@ -162,7 +162,7 @@
 			which returns a description, <br />
 			<code>curl -k https://localhost:8181/authn.oidc/version -w "\n"</code>
 			which returns the version, <br />
-			<code>curl -k https://localhost:8181/authn.oidc/jwkupdate -w "\n"</code>
+			<code>curl -k https://localhost:8181/authn.oidc/jwkupdate -X POST</code>
 			which triggers an update of the JWK configuration, and <br />
 			<code>curl -k https://localhost:8181/authn.oidc/authenticate -w "\n"
 			-d 'json={"credentials":[{"token":"&lt;token&gt;"}]}'</code>
