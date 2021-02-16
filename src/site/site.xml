@@ -8,6 +8,7 @@
 		</breadcrumbs>
 
 		<menu name="Information for Users">
+			<item name="General information" href="general-information.html" />
 			<item name="Issue Tracking" href="issue-tracking.html" />
 			<item name="Release Notes" href="release-notes.html" />
 		</menu>

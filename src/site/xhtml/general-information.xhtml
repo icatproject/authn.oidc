@@ -1,0 +1,74 @@
+<html>
+
+<head>
+	<title>general information</title>
+</head>
+
+<body>
+
+	<h1>General Information</h1>
+
+	<h2>Introduction</h2>
+	<p>
+		This authentication plugin enables users to log in to ICAT via an
+		external OpenID Connect (OIDC) identity provider such as <a
+		target="_blank" href="https://www.keycloak.org/">Keycloak</a>. Unlike
+		other ICAT authentication plugins, it doesn't check the user's
+		credentials by itself. Instead, it leaves this part to the identity
+		provider (IdP) and relies on a so-called token to actually authenticate
+		the user.
+	</p>
+
+	<h2>Example authentication flow for TopCAT login</h2>
+	<ul>
+		<li>Step 1: A user wants to log in to ICAT from a web interface (here
+		assumed to be TopCAT) and chooses to do so via OpenID Connect.</li>
+		<li>Step 2: The user gets redirected to the IdP.</li>
+		<li>Step 3: The user enters their credentials at the IdP.</li>
+		<li>Step 4: If the credentials are valid, the user gets redirected back
+		to a registered callback URL. Along with the redirection comes an
+		authorization code included in the URL.</li>
+		<li>Step 5: The authorization code is used to obtain a signed token from
+		the IdP.</li>
+		<li>Step 6: The authn.oidc plugin takes the token as input and verifies
+		its signature. If the token is valid, authn.oidc extracts the ICAT
+		username from the token and returns it.</li>
+		<li>Step 7: The ICAT server creates a session for the user that can be
+		used for TopCAT.</li>
+	</ul>
+	<p>
+		Note that the authn.oidc plugin is only responsible for step 6. The
+		other steps require some more work on your end.
+	</p>
+
+	<h2>Work items needed for the above authentication flow</h2>
+	<ul>
+		<li>To enable step 1, you need to add a corresponding link or button to
+		the login page of TopCAT.</li>
+		<li>For the steps 2 and 5, you must put in place a service that handles
+		the communication with the IdP to obtain the token.</li>
+		<li>In steps 6 and 7, you have to use the token to log in to ICAT via
+		the authn.oidc authenticator on behalf of the user. You then have to
+		store the obtained ICAT session in the Browser's session storage such
+		that TopCAT can make use of it.</li>
+	</ul>
+
+	<h2>Types of tokens</h2>
+	<p>
+		OpenID Connect defines (among others) two types of tokens: The access
+		token and the identity token. By definition, the identity token is
+		always a so-called JSON Web Token (JWT). While the access token does not
+		have such a strictly defined format, some identity providers (including
+		Keycloak) also issue access tokens in the JWK format as well. Note,
+		however, that this is not required.
+	</p>
+	<p>
+		The authn.oidc plugin accepts any token that uses the JWT format. It
+		doesn't matter whether this is an access token or an identity token.
+		What matters is that the token must include a claim with the ICAT
+		username to identify the user.
+	</p>
+
+</body>
+
+</html>
