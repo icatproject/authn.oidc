@@ -49,11 +49,11 @@
 		the communication with the IdP to obtain the token.</li>
 		<li>In steps 6 and 7, you have to use the token to log in to ICAT via
 		the authn.oidc authenticator on behalf of the user. You then have to
-		store the obtained ICAT session in the Browser's session storage such
+		store the obtained ICAT session in the browser's session storage such
 		that TopCAT can make use of it.</li>
 	</ul>
 
-	<h2>Types of tokens</h2>
+	<h2>Tokens</h2>
 	<p>
 		OpenID Connect defines (among others) two types of tokens: The access
 		token and the identity token. By definition, the identity token is
@@ -67,6 +67,13 @@
 		doesn't matter whether this is an access token or an identity token.
 		What matters is that the token must include a claim with the ICAT
 		username to identify the user.
+	</p>
+	<p>
+		Note that the token must be issued and signed by the IdP which
+		authn.oidc is configured to trust. This includes two aspects: (1) The
+		iss claim in the token must match the tokenIssuer specified in
+		run.properties; and (2) the token's signature must be verifiable using a
+		public key (jwks_uri) from the wellKnownUrl specified in run.properties.
 	</p>
 
 </body>
