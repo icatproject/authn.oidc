@@ -30,7 +30,7 @@
 
 	<scm>
 		<connection>scm:git:${gitUrl}.git</connection>
-		<developerConnection>scm:git:${gitUrl}.git</developerConnection>
+		<developerConnection>scm:git:git@github.com:icatproject/authn.oidc.git</developerConnection>
 		<url>${gitUrl}</url>
 		<tag>HEAD</tag>
 	</scm>
