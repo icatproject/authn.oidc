@@ -202,6 +202,15 @@ public class OIDC_Authenticator {
 			}
 		}
 
+		Claim iss = decodedJWT.getClaim("iss");
+		if (iss.isNull()) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing the iss claim");
+		}
+		if (!configurationManager.getTokenIssuer().equals(iss.asString())) {
+			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN,
+					"The iss claim of the token does not match the configured issuer");
+		}
+
 		String kid = decodedJWT.getKeyId();
 		if (kid == null) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing a kid");
@@ -225,15 +234,6 @@ public class OIDC_Authenticator {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token has expired");
 		} catch (JWTVerificationException | JwkException e) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is invalid");
-		}
-
-		Claim iss = decodedJWT.getClaim("iss");
-		if (iss.isNull()) {
-			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing the iss claim");
-		}
-		if (!configurationManager.getTokenIssuer().equals(iss.asString())) {
-			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN,
-					"The iss claim of the token does not match the configured issuer");
 		}
 
 		String icatUser;
