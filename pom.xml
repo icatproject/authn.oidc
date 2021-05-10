@@ -8,10 +8,10 @@
 	<name>ICAT: authn.oidc</name>
 
 	<description>
-      This is the OIDC Authentication plugin for ICAT.  It is based on the
-      OpenID Connect protocol and works by verifying tokens issued by an external
-      Identity Provider.
-    </description>
+		This is the OIDC Authentication plugin for ICAT.  It is based on the
+		OpenID Connect protocol and works by verifying tokens issued by an external
+		Identity Provider.
+	</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,7 +24,7 @@
 	<repositories>
 		<repository>
 			<id>ICAT Repo</id>
-			<url>http://www.icatproject.org/mvn/repo</url>
+			<url>${repoUrl}</url>
 		</repository>
 	</repositories>
 
