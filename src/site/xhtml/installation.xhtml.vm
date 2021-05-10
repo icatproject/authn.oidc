@@ -110,10 +110,16 @@
 		</dd>
 		<dt>icatUserClaimException</dt>
 		<dd>
-			By default, if no icatUserClaim is present in the token, authn.oidc
-			falls back to using the 'sub' claim. If you would prefer an
-			AuthnException to be thrown in this case, set this property to
-			'true'.
+			By default, if no <code>icatUserClaim</code> is present in the
+			token, authn.oidc falls back to using the 'sub' claim. If you would
+			prefer an AuthnException to be thrown in this case, set this
+			property to 'true'.
+		</dd>
+		<dt>requiredScope</dt>
+		<dd>
+			If you only want to allow tokens with a particular scope, you can
+			specify it here. In this case, if a user tries to log in with a
+			token that doesn't have this scope, an AuthnException gets thrown.
 		</dd>
 		<dt>ip</dt>
 		<dd>

@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -54,6 +55,7 @@ public class OIDC_Authenticator {
 	private OpenidConfigurationManager configurationManager;
 	private String icatUserClaim;
 	private boolean icatUserClaimException;
+	private String requiredScope;
 	private AddressChecker addressChecker;
 	private String mechanism;
 	private boolean icatUserPrependMechanism;
@@ -82,6 +84,10 @@ public class OIDC_Authenticator {
 				if (props.getString("icatUserClaimException") == "true") {
 					icatUserClaimException = true;
 				}
+			}
+
+			if (props.has("requiredScope")) {
+				requiredScope = props.getString("requiredScope");
 			}
 
 			if (props.has("ip")) {
@@ -182,6 +188,18 @@ public class OIDC_Authenticator {
 			decodedJWT = JWT.decode(token);
 		} catch (JWTDecodeException e) {
 			throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token could not be decoded");
+		}
+
+		if (requiredScope != null) {
+			Claim scope = decodedJWT.getClaim("scope");
+			if (scope.isNull()) {
+				throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN, "The token is missing the scope claim");
+			}
+			String[] scopes = scope.asString().split("\\s+");
+			if (!Arrays.asList(scopes).contains(requiredScope)) {
+				throw new AuthnException(HttpURLConnection.HTTP_FORBIDDEN,
+						"The token is missing the required scope " + requiredScope);
+			}
 		}
 
 		String kid = decodedJWT.getKeyId();
