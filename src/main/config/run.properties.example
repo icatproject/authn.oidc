@@ -14,6 +14,10 @@ icatUserClaim = icatUser
 # Otherwise, authn.oidc falls back to using the 'sub' claim.
 !icatUserClaimException = true
 
+# Require the token to have a particular scope. If specified, tokens without
+# this scope will be rejected.
+!requiredScope = icat_login
+
 # If access to the OIDC authentication should only be allowed from certain
 # IP addresses then provide a space separated list of allowed values. These
 # take the form of an IPV4 or IPV6 address followed by the number of bits
