@@ -1,7 +1,7 @@
 # Glassfish
 secure         = true
 container      = Glassfish
-home           = /home/fisher/pf/glassfish4
+home           = /opt/payara6
 port           = 4848
 
 # WildFly
