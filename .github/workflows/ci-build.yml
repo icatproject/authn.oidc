@@ -8,22 +8,18 @@ on:
 
 jobs:
   build_and_tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        java: [ '8', '11' ]
+        java_version: [11, 17]
+
     steps:
       # Setup Java & Python
       - name: Setup Java
         uses: actions/setup-java@cd89f46ac9d01407894225f350157564c9c7cee2 # v3.12.0
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.java }}
-      - name: Setup Python
-        uses: actions/setup-python@61a6322f88396a6271a6ee3565807d608ecaddd1 # v4.7.0
-        with:
-          python-version: "3.9.7"
-          architecture: x64
+          java-version: ${{ matrix.java_version }}
 
       - name: Cache local Maven repository
         uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
@@ -33,13 +29,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Run apt-get update
+        run: sudo apt-get update
+
       # ICAT Ansible clone and install dependencies
       - name: Checkout icat-ansible
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
         with:
           repository: icatproject-contrib/icat-ansible
           path: icat-ansible
-          ref: master
+          ref: payara6
       - name: Install Ansible
         run: pip install -r icat-ansible/requirements.txt
 
