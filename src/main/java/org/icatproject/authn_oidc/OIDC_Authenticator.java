@@ -133,7 +133,6 @@ public class OIDC_Authenticator {
         keyVerifier.checkJwkProvider();
     }
 
-
     @GET
     @Path("description")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
