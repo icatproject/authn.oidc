@@ -4,3 +4,10 @@
 /.classpath
 /.project
 /.pydevproject
+.idea
+src/test/java/org/icatproject/.DS_Store
+src/test/java/.DS_Store
+src/test/java/org/.DS_Store
+src/test/.DS_Store
+src/.DS_Store
+.DS_Store
