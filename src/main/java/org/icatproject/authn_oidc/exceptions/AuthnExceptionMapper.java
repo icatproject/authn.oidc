@@ -1,14 +1,13 @@
 package org.icatproject.authn_oidc.exceptions;
 
-import java.io.ByteArrayOutputStream;
-
 import jakarta.json.Json;
 import jakarta.json.stream.JsonGenerator;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-
 import org.icatproject.authentication.AuthnException;
+
+import java.io.ByteArrayOutputStream;
 
 @Provider
 public class AuthnExceptionMapper implements ExceptionMapper<AuthnException> {
