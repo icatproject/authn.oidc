@@ -1,0 +1,75 @@
+{
+  "realm": "icat",
+  "enabled": true,
+  "users": [
+    {
+      "username": "username",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "attributes": {
+        "name": "user1",
+        "icatUser": "user1"
+      }
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "my-client",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "my-client-secret",
+      "redirectUris": ["http://localhost:8080/*"],
+      "defaultClientScopes": ["openid", "profile", "email", "icat_login"],
+      "optionalClientScopes": ["phone", "address"],
+      "directAccessGrantsEnabled": true
+    }
+  ],
+  "clientScopes": [
+    {
+      "name": "icat_login",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "scope-icat_login",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "scope",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "scope",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "icatUser-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "icatUser",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "icatUser",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    }
+  ]
+}
