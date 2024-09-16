@@ -1,0 +1,45 @@
+version: '3'
+services:
+  # Available at http://localhost:5050/realms/icat/
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.0
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: dev-mem   # In-memory database for non-persistent setup
+    command: >
+      start-dev --import-realm
+    volumes:
+      # Config works with the defaults values in application.properties
+      - ./src/test/realm-config:/opt/keycloak/data/import
+    ports:
+      - "5050:8080" # Be careful not to clash with Quarkus app
+
+# Tokens can then be requested by:
+
+#  curl --location --request POST 'http://localhost:5050/realms/icat/protocol/openid-connect/token' \
+#--header 'Content-Type: application/x-www-form-urlencoded' \
+#  --data-urlencode 'client_id=my-client' \
+#  --data-urlencode 'client_secret=my-client-secret' \
+#  --data-urlencode 'grant_type=password' \
+#  --data-urlencode 'username=username' \
+#  --data-urlencode 'password=password' \
+#  --data-urlencode 'scope=icat_login'
+
+# Validated against keycloak using the introspect endpoint,
+# this will confirm the Keycloak instance has been set up correctly:
+
+#  curl --location --request POST 'http://localhost:5050/realms/icat/protocol/openid-connect/token/introspect' \
+#  --header 'Content-Type: application/x-www-form-urlencoded' \
+#  --data-urlencode 'client_id=my-client' \
+#  --data-urlencode 'client_secret=my-client-secret' \
+#  --data-urlencode 'token=<token>
+
+# Using the auth api (once started):
+
+#  curl -X POST http://127.0.0.1:8080/authn.oidc/authenticate -H "Content-Type: application/x-www-form-urlencoded" \
+#  -d 'json={"credentials":[{"token":"PUT_TOKEN_HERE"}]}'
+
+
+
+
