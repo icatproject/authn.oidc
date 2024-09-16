@@ -38,14 +38,6 @@ public class OIDC_Authenticator {
     URL tokenIssuer;
 
     @Inject
-    @ConfigProperty(name = "wellKnownUrl")
-    URL wellKnownUrl;
-
-    @Inject
-    @ConfigProperty(name = "ip")
-    Optional<String> ipAddresses;
-
-    @Inject
     @ConfigProperty(name = "requiredScope")
     Optional<String> requiredScope;
 
@@ -66,8 +58,9 @@ public class OIDC_Authenticator {
 
     @PostConstruct
     void init() {
-        keyVerifier = new KeyVerifier(wellKnownUrl, tokenIssuer);
-        ipVerifier = new IPVerifier(ipAddresses.orElse(null));
+        keyVerifier = new KeyVerifier();
+        keyVerifier.scheduledJwkUpdate();
+        ipVerifier = new IPVerifier();
         logger.info("Initialised OIDC_Authenticator");
     }
 
@@ -130,8 +123,10 @@ public class OIDC_Authenticator {
     @POST
     @Path("jwkupdate")
     public void jwkUpdate() throws AuthnException {
+        logger.info("Manual JWK update triggered via endpoint");
         keyVerifier.checkJwkProvider();
     }
+
 
     @GET
     @Path("description")

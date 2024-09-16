@@ -10,9 +10,12 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
+import io.quarkus.scheduler.Scheduled;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.icatproject.authentication.AuthnException;
 import org.jboss.logging.Logger;
 
@@ -37,18 +40,28 @@ import java.util.Optional;
  * and the token's algorithm.
  * </p>
  */
+@ApplicationScoped
 public class KeyVerifier {
 
     private static final Logger logger = Logger.getLogger(KeyVerifier.class);
 
     private JwkProvider jwkProvider;
-    private final URL wellKnownUrl;
-    private final URL tokenIssuer;
 
-    public KeyVerifier(URL wellKnownUrl, URL tokenIssuer) {
-        this.wellKnownUrl=wellKnownUrl;
-        this.tokenIssuer=tokenIssuer;
-        //this.checkJwkProvider();
+    @ConfigProperty(name = "wellKnownUrl")
+    URL wellKnownUrl;
+
+    @ConfigProperty(name = "tokenIssuer")
+    URL tokenIssuer;
+
+    /** Method that checks the JWK provider every 24h */
+    @Scheduled(every = "24h")
+    void scheduledJwkUpdate() {
+        try {
+            logger.info("Scheduled automatic JWK update started");
+            this.checkJwkProvider();
+        } catch (AuthnException e) {
+            logger.error("Scheduled JWK update failed", e);
+        }
     }
 
     /** Method that gets the well known url from the config,

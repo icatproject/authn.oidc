@@ -1,11 +1,15 @@
 package org.icatproject.authn_oidc;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.icatproject.authentication.AuthnException;
 import org.icatproject.utils.AddressChecker;
 import org.icatproject.utils.AddressCheckerException;
 import org.jboss.logging.Logger;
 
 import java.net.HttpURLConnection;
+import java.util.Optional;
 
 /**
  * The {@code IPVerifier} class is responsible for verifying the IP address
@@ -15,20 +19,25 @@ import java.net.HttpURLConnection;
  * and verifies whether the IP from a request is allowed to proceed.
  * </p>
  */
+@ApplicationScoped
 public class IPVerifier {
 
     private static final Logger logger = Logger.getLogger(IPVerifier.class);
 
+    @Inject
+    @ConfigProperty(name = "ip")
+    Optional<String> ipAddresses;
+
     private AddressChecker addressChecker;
 
     /** Constructor that creates an instance of address checker if any IPs are present, and registers them with it */
-    public IPVerifier(String ipAddresses) {
+    public IPVerifier() {
         logger.info("Checking IPs");
-        if (ipAddresses != null && !ipAddresses.isEmpty()) {
+        if (ipAddresses.isPresent()) {
             try {
                 logger.info("Initialising AddressChecker with IP: " + ipAddresses);
                 // If ipAddresses is present, create an AddressChecker
-                addressChecker = new AddressChecker(ipAddresses);
+                addressChecker = new AddressChecker(ipAddresses.toString());
             } catch (Exception e) {
                 logger.error("Problem creating AddressChecker with IP: " + ipAddresses, e);
                 throw new IllegalStateException("Invalid IP configuration", e);
