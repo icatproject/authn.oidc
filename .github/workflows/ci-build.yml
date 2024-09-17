@@ -24,7 +24,7 @@ jobs:
       - name: Set up Docker Compose
         run: docker compose up -d
 
-      - name: Wait for container to fill DB and exit
+      - name: Wait for container to fill Keycloak Instance and exit
         run: |
           sleep 30
 
