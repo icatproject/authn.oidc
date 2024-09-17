@@ -113,15 +113,15 @@ public class OIDC_Authenticator {
                 + tokenVerifier.getIcatUser());
 
         // Build return JSON
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (JsonGenerator gen = Json.createGenerator(baos)) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        try (JsonGenerator gen = Json.createGenerator(output)) {
             gen.writeStartObject().write("username", tokenVerifier.getIcatUser());
             if (icatMechanism != null) {
                 gen.write("mechanism", icatMechanism);
             }
             gen.writeEnd();
         }
-        return baos.toString();
+        return output.toString();
     }
 
     @POST
