@@ -9,6 +9,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.stream.JsonGenerator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.icatproject.authentication.AuthnException;
 import org.jboss.logging.Logger;
@@ -25,6 +26,7 @@ public class OIDC_Authenticator {
 
     private static final Logger logger = Logger.getLogger(OIDC_Authenticator.class);
 
+    // Get config values
     @Inject
     @ConfigProperty(name = "quarkus.application.version")
     String projectVersion;
@@ -53,14 +55,16 @@ public class OIDC_Authenticator {
     @ConfigProperty(name = "icatUserPrependMechanism")
     Optional<Boolean> icatUserPrependMechanism;
 
-    private KeyVerifier keyVerifier;
-    private IPVerifier ipVerifier;
+    // Inject instances of our own classes
+    @Inject
+    KeyVerifier keyVerifier;
+
+    @Inject
+    IPVerifier ipVerifier;
 
     @PostConstruct
     void init() {
-        keyVerifier = new KeyVerifier();
         keyVerifier.scheduledJwkUpdate();
-        ipVerifier = new IPVerifier();
         logger.info("Initialised OIDC_Authenticator");
     }
 
@@ -122,9 +126,11 @@ public class OIDC_Authenticator {
 
     @POST
     @Path("jwkupdate")
-    public void jwkUpdate() throws AuthnException {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response jwkUpdate() throws AuthnException {
         logger.info("Manual JWK update triggered via endpoint");
         keyVerifier.checkJwkProvider();
+        return Response.ok("JWK update completed successfully.").build();
     }
 
 

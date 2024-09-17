@@ -12,6 +12,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
@@ -47,9 +48,11 @@ public class KeyVerifier {
 
     private JwkProvider jwkProvider;
 
+    @Inject
     @ConfigProperty(name = "wellKnownUrl")
     URL wellKnownUrl;
 
+    @Inject
     @ConfigProperty(name = "tokenIssuer")
     URL tokenIssuer;
 

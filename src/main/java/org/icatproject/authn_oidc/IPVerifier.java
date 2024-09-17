@@ -1,5 +1,6 @@
 package org.icatproject.authn_oidc;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -30,14 +31,16 @@ public class IPVerifier {
 
     private AddressChecker addressChecker;
 
-    /** Constructor that creates an instance of address checker if any IPs are present, and registers them with it */
-    public IPVerifier() {
+    /** Constructor that creates an instance of address checker if any IPs are present,
+     * and registers them with it */
+    @PostConstruct
+    public void init() {
         logger.info("Checking IPs");
         if (ipAddresses.isPresent()) {
             try {
                 logger.info("Initialising AddressChecker with IP: " + ipAddresses);
                 // If ipAddresses is present, create an AddressChecker
-                addressChecker = new AddressChecker(ipAddresses.toString());
+                addressChecker = new AddressChecker(ipAddresses.get());
             } catch (Exception e) {
                 logger.error("Problem creating AddressChecker with IP: " + ipAddresses, e);
                 throw new IllegalStateException("Invalid IP configuration", e);
