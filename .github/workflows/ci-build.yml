@@ -28,13 +28,13 @@ jobs:
         run: |
           sleep 30
 
-      - name: Build project and run unit tests
+      - name: Build project
         run: ./mvnw clean package -DskipTests
 
       - name: Run integration tests
         run: ./mvnw failsafe:integration-test
 
-      - name: Build native executable and run tests
+      - name: Build native executable
         run: ./mvnw package -DskipTests -Dnative -Dquarkus.native.container-build=true
 
       - name: Login to Harbor
