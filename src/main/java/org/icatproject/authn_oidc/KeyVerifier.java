@@ -10,7 +10,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
-import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
@@ -55,17 +54,6 @@ public class KeyVerifier {
     @Inject
     @ConfigProperty(name = "tokenIssuer")
     URL tokenIssuer;
-
-    /** Method that checks the JWK provider every 24h */
-    @Scheduled(every = "24h")
-    void scheduledJwkUpdate() {
-        try {
-            logger.info("Scheduled automatic JWK update started");
-            this.checkJwkProvider();
-        } catch (AuthnException e) {
-            logger.error("Scheduled JWK update failed", e);
-        }
-    }
 
     /** Method that gets the well known url from the config,
      * checks certain tags are present and sets the class variable jwkProvider */

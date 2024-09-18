@@ -9,7 +9,6 @@ import jakarta.json.JsonObject;
 import jakarta.json.stream.JsonGenerator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.icatproject.authentication.AuthnException;
 import org.jboss.logging.Logger;
@@ -64,7 +63,6 @@ public class OIDC_Authenticator {
 
     @PostConstruct
     void init() {
-        keyVerifier.scheduledJwkUpdate();
         logger.info("Initialised OIDC_Authenticator");
     }
 
@@ -123,16 +121,6 @@ public class OIDC_Authenticator {
         }
         return output.toString();
     }
-
-    @POST
-    @Path("jwkupdate")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response jwkUpdate() throws AuthnException {
-        logger.info("Manual JWK update triggered via endpoint");
-        keyVerifier.checkJwkProvider();
-        return Response.ok("JWK update completed successfully.").build();
-    }
-
 
     @GET
     @Path("description")
