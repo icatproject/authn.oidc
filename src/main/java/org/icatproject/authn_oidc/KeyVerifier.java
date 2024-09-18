@@ -45,6 +45,7 @@ public class KeyVerifier {
 
     private static final Logger logger = Logger.getLogger(KeyVerifier.class);
 
+    // Used to get the JWK and check algorithm
     private JwkProvider jwkProvider;
 
     @Inject
@@ -56,7 +57,10 @@ public class KeyVerifier {
     URL tokenIssuer;
 
     /** Method that gets the well known url from the config,
-     * checks certain tags are present and sets the class variable jwkProvider */
+     * Checks the issuers are the same,
+     * Gets the JWK URL and updates the jwkProvider class variable
+     * This is later used to get the JWK and check the algorithm
+     */
     public void checkJwkProvider() throws AuthnException {
         try {
             // Create the HTTP client
